@@ -2,7 +2,7 @@ function Field(point, mass) {
 	this.position = point;
 	this.mass = mass || 100;
 	this.minMass = this.mass;
-	this.maxMass = this.mass * 3;
+	this.maxMass = this.mass * 5;
 }
 
 Field.prototype.setMass = function(mass) {
@@ -16,5 +16,5 @@ Field.prototype.move = function(point) {
 
 Field.prototype.update = function() {
 	if (this.mass > this.minMass)
-		this.mass -= 5;
+		this.mass -= 10;
 };

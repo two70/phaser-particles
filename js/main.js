@@ -3,10 +3,11 @@ var game = new Phaser.Game(1200, 900, Phaser.AUTO, 'container', { preload: prelo
 
 //var particles; 
 
-var playerLoc = new Vector(150, 150);
+var playerLoc = new Vector(300, 250);
+var player;
 // Add one emitter located at `{ x : 100, y : 230}` from the origin (top left)
 // that emits at a velocity of `2` shooting out from the right (angle `0`)
-var emitters = [];
+var emitters;// = game.add.group();
 
 // Add one field located at `{ x : 400, y : 230}` (to the right of our emitter)
 // that repels with a force of `140`
@@ -20,64 +21,54 @@ function preload() {
 }
 
 function create() {
-
-  emitters = [new Emitter(playerLoc, Vector.fromAngle(4, 4), Math.PI)];
-  game.input.holdRate = 500;
-  game.input.onDown.add(onTap, this);
-  console.log(rgbToHex(0,0,255));
+	emitters = game.add.group();
+	player = new Emitter('particle', playerLoc, Vector.fromAngle(2.3, 2.3), Math.PI);
+	player.anchor.setTo(0.5, 0.5);
+	player.scale.set(0.2);
+	emitters.add(player);
 
 }
 
 function update() {
 
-  if (game.input.activePointer.isDown) {
-    var pointerX = game.input.activePointer.x;
-    var pointerY = game.input.activePointer.y;
-    
-    if (pointerX > emitters[0].position.x) {
-      if(pointerY > emitters[0].position.y)
-        emitters[0].move(new Vector(1, 1));
-      else
-        emitters[0].move(new Vector(1, -1));
-    }
-    else {
-      if(pointerY > emitters[0].position.y)
-        emitters[0].move(new Vector(-1, 1));
-      else
-        emitters[0].move(new Vector(-1, -1));
-    }
-  }
+	if (game.input.activePointer.isDown) {
+		getMovement();
 
-  emitters[0].update();
+	}
+
+	//emitters.getAt.update();
 }
 
 function render() {
-  var particle = emitters[0].particles.getAt(0);
-  var velX = Math.floor(particle.velocity.x);
-  var velY = Math.floor(particle.velocity.y);
-  var aclX = Math.floor(particle.acceleration.x);
-  var aclY = Math.floor(particle.acceleration.y);
-  var tint = Math.floor(particle.tint);
-  game.debug.text('Living: ' + emitters[0].particles.length + ' Mass: ' + tint, 32, 32);
+	if (emitters.getAt(0).particles.getAt(500).x) {
+		var particle = emitters.getAt(0).particles.getAt(500);
+		var velX = Math.floor(particle.velocity.x);
+		var velY = Math.floor(particle.velocity.y);
+		var aclX = Math.floor(particle.acceleration.x);
+		var aclY = Math.floor(particle.acceleration.y);
+		var tint = Math.floor(particle.tint);
+		var distance = particle.totalDistance;
+		game.debug.text('Living: ' + emitters.getAt(0).particles.length, 32, 32);
+	}
 }
 
-function onTap(pointer, doubleTap) {
-  if (doubleTap) {
+function getMovement() {
+	var pointerX = game.input.activePointer.x;
+	var pointerY = game.input.activePointer.y;
+	var playerX = emitters.getAt(0).position.x;
+	var playerY = emitters.getAt(0).position.y;
 
-  }
-
-  else {
-    if (pointer.x > emitters[0].position.x) {
-      emitters[0].move(new Vector(1, 0));
-      /*if (moving)
-        moving = false;
-      else
-        moving = true;*/
-    }
-    console.log(emitters[0].position.x);
-  }
-}
-
-function rgbToHex(r, g, b) {
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+	if (pointerX > playerX) {
+		if (pointerY > playerY)
+			var moveAmount = new Vector(1, 1);
+		else
+	    	var moveAmount = new Vector(1, -1);
+	}
+	else {
+		if (pointerY > playerY)
+	    	var moveAmount = new Vector(-1, 1);
+		else
+	    	var moveAmount = new Vector(-1, -1);
+	}
+	emitters.getAt(0).move(moveAmount);
 }

@@ -1,15 +1,17 @@
-Particle = function(game, key, point, velocity, acceleration) {
+Particle = function(key, point, velocity, acceleration) {
   Phaser.Sprite.call(this, game, point.x, point.y, key);
   this.position = point || new Vector(0, 0);
   this.velocity = velocity || new Vector(0, 0);
   this.acceleration = acceleration || new Vector(0, 0);
+  this.ttl = Math.random() * 200;
   this.lived = 0;
+  this.totalDistance;
 };
 
 Particle.prototype = Object.create(Phaser.Sprite.prototype);
 Particle.prototype.constructor = Particle;
 
-Particle.prototype.submitToFields = function (field) {
+Particle.prototype.move = function (field) {
   // our starting acceleration this frame
   var totalAccelerationX = 0;
   var totalAccelerationY = 0;
@@ -17,6 +19,8 @@ Particle.prototype.submitToFields = function (field) {
   // find the distance between the particle and the field
   var vectorX = field.position.x - this.position.x;
   var vectorY = field.position.y - this.position.y;
+
+  this.totalDistance = Math.sqrt(vectorX*vectorX+vectorY*vectorY);
 
   // calculate the force via MAGIC and HIGH SCHOOL SCIENCE!
   var force = field.mass / Math.pow((vectorX*vectorX+field.mass/2+vectorY*vectorY+field.mass/2),1.5);
@@ -31,14 +35,7 @@ Particle.prototype.submitToFields = function (field) {
   // update our particle's acceleration
   this.acceleration = new Vector(totalAccelerationX, totalAccelerationY);
 
-};
-
-Particle.prototype.move = function () {
+  // update velocity and position from acceleration
   this.velocity.add(this.acceleration);
   this.position.add(this.velocity);
-
-  var newTint = (this.velocity.getMagnitude() * 1000);
-  //if (newTint > 255)
-    //newTint = 255;
-  this.tint = newTint;//rgbToHex(0, 0, newTint);
 };

@@ -1,4 +1,5 @@
-function Emitter(point, velocity, spread) {
+Emitter = function(key, point, velocity, spread) {
+  Phaser.Sprite.call(this, game, point.x, point.y, key);
   this.position = point; // Vector
   this.velocity = velocity; // Vector
   this.spread = spread || Math.PI / 32; // possible angles = velocity +/- spread
@@ -6,43 +7,15 @@ function Emitter(point, velocity, spread) {
   this.particles = game.add.group();
   this.isFieldMoving = false;
 
-  // Total amount of particles is the time to live(ttl) times the emissionRate
-  this.ttl = 1000; // How long particles should live for
-  this.emissionRate = 5;
-  this.maxParticles = 2000;
+  //this.ttl = Math.random() * 500; // How long particles should live for
+  this.emissionRate = 20;
+  this.maxParticles = 5000;
 
-  this.field = new Field(this.position, 80);
-}
-
-Emitter.prototype.move = function(point) {
-  this.position.add(point);
-  this.field.move(this.position);
-  this.isFieldMoving = true;
+  this.field = new Field(this.position, 10);
 };
 
-Emitter.prototype.plotParticles = function() {
-
-  for (var i = 0; i < this.particles.length; i++) {
-    var particle = this.particles.getAt(i);
-
-    // If this particle is dead, remove it from group
-    if (++particle.lived >= this.ttl) {
-      this.particles.remove(particle);
-    }
-
-    // Else update its velocity
-    else {
-      // Update velocities and accelerations to account for the fields
-      particle.submitToFields(this.field);
-
-      // Move our particles
-      particle.move();
-    }
-  }
-
-  // Update our global particles reference
-  //particles = currentParticles;
-};
+Emitter.prototype = Object.create(Phaser.Sprite.prototype);
+Emitter.prototype.constructor = Emitter;
 
 Emitter.prototype.emitParticle = function() {
   if (this.particles.length >= this.maxParticles) return;
@@ -60,11 +33,38 @@ Emitter.prototype.emitParticle = function() {
     // New velocity based off of the calculated angle and magnitude
     var velocity = Vector.fromAngle(angle, magnitude);
 
-    var particle = new Particle(game, 'particle', position, velocity);
-    //particle.tint = 0xffffff;
-    particle.scale.set(0.1);
+    var particle = new Particle('particle', position, velocity);
+    particle.tint = 0x0000ff;
+    particle.scale.set(0.05);
     this.particles.add(particle);
   }
+};
+
+Emitter.prototype.plotParticles = function() {
+
+  for (var i = 0; i < this.particles.length; i++) {
+    var particle = this.particles.getAt(i);
+
+    // If this particle is dead, remove it from group
+    if (++particle.lived >= particle.ttl || particle.totalDistance > 300) {
+      this.particles.remove(particle);
+    }
+
+    // Else update its velocity
+    else {
+      // Update velocities and accelerations to account for the fields and then move the particles
+      particle.move(this.field);
+    }
+  }
+
+  // Update our global particles reference
+  //particles = currentParticles;
+};
+
+Emitter.prototype.move = function(point) {
+  this.position.add(point);
+  this.field.move(this.position);
+  this.isFieldMoving = true;
 };
 
 Emitter.prototype.update = function() {
