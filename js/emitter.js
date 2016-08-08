@@ -1,7 +1,7 @@
 Emitter = function(key, point, velocity, spread) {
   Phaser.Sprite.call(this, game, point.x, point.y, key);
   this.position = point; // Vector
-  this.velocity = velocity; // Vector
+  this.emitVelocity = velocity; // Vector
   this.spread = spread || Math.PI / 32; // possible angles = velocity +/- spread
   this.drawColor = "#999"; // So we can tell them apart from Fields later
   this.particles = game.add.group();
@@ -22,10 +22,10 @@ Emitter.prototype.emitParticle = function() {
 
   for (var j = 0; j < this.emissionRate; j++) {
     // Use an angle randomized over the spread so we have more of a "spray"
-    var angle = this.velocity.getAngle() + this.spread - (Math.random() * this.spread * 2);
+    var angle = this.emitVelocity.getAngle() + this.spread - (Math.random() * this.spread * 2);
 
     // The magnitude of the emitter's velocity
-    var magnitude = this.velocity.getMagnitude();
+    var magnitude = this.emitVelocity.getMagnitude();
 
     // The emitter's position
     var position = new Vector(this.position.x, this.position.y);

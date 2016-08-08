@@ -4,7 +4,12 @@ function Universe () {
 	this.emitters = game.add.group();
 }
 
-Universe.prototype.addEmitter = function(point, velocity, spread) {
-	var emitter = new Emitter(point.velocity, spread);
+Universe.prototype.addEmitter = function(point, emitVelocity, spread, key) {
+	var emitter = new Emitter(point, emitVelocity, spread, key);
 	this.emitters.add(emitter);
+};
+
+Universe.prototype.addField = function(point, mass, key) {
+	var field = new Field(point, mass, key);
+	this.fields.add(field);
 };
