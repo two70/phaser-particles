@@ -1,11 +1,11 @@
-Field = function(key, point, mass) {
+Field = function(point, mass, key) {
 	Phaser.Sprite.call(this, game, point.x, point.y, key);
 	this.position = point;
 	this.mass = mass || 100;
-	this.minMass = this.mass;
-	this.maxMass = this.mass * 5;
-	this.velocity = Vector(0,0);
-	this.acceleration = Vector(0,0);
+	this.anchor.setTo(0.5,0.5);
+	this.scale.set(this.mass * 0.01);
+	//this.velocity = Vector(0,0);
+	//this.acceleration = Vector(0,0);
 };
 
 Field.prototype = Object.create(Phaser.Sprite.prototype);
@@ -16,11 +16,10 @@ Field.prototype.setMass = function(mass) {
 };
 
 Field.prototype.move = function(acceleration) {
-	this.acceleration = acceleration;
-	this.velocity.add(acceleration)
+	//this.acceleration = acceleration;
+	//this.velocity.add(acceleration)
 };
 
 Field.prototype.update = function() {
-	if (this.mass > this.minMass)
-		this.mass -= 10;
+	this.scale.set(this.mass * 0.01);
 };
