@@ -1,6 +1,6 @@
 Field = function(point, mass, key) {
 	Phaser.Sprite.call(this, game, point.x, point.y, key);
-	this.position = point;
+	this.position = new Vector(point.x, point.y);
 	this.mass = mass || 100;
 	this.anchor.setTo(0.5,0.5);
 	this.scale.set(this.mass * 0.01);

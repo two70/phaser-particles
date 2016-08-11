@@ -1,8 +1,8 @@
 Emitter = function(universeParticles, field, key) {
   this.field = field; // The field that this emitter belongs to
-  this.position = new Vector(field.position.x, field.position.y); // Vector
-  Phaser.Sprite.call(this, game, this.position.x, this.position.y, key);
 
+  Phaser.Sprite.call(this, game, field.position.x, field.position.y, key);
+  this.position = new Vector(field.position.x, field.position.y); // Position Vector
   this.velocity = new Vector(0,0);
   this.emitVelocity = new Vector(0.1,0.1); // Vector
   this.spread = Math.PI; // 
@@ -13,7 +13,7 @@ Emitter = function(universeParticles, field, key) {
   this.emissionRate = 10;
   this.maxParticles = 5000;
   this.tint = 0x00ffff;
-  this.angle = 0;
+  this.roangle = 0;
   game.time.events.loop(Phaser.Timer.SECOND, this.emitParticle, this);
 };
 
@@ -45,7 +45,6 @@ Emitter.prototype.emitParticle = function() {
 
 Emitter.prototype.updateField = function(field) {
   this.field = field;
-  console.log("updated field");
 };
 
 Emitter.prototype.update = function() {
@@ -53,24 +52,24 @@ Emitter.prototype.update = function() {
   var y = this.field.position.y - this.position.y;
   var distanceField = Math.sqrt(x*x+y*y);
 
-  if (distanceField < 200) {
+  if (distanceField <= 105) {
     var radius = 100;//this.field.mass * 5;
-    this.position.x = this.field.position.x + radius * Math.cos(this.angle * Math.PI / 180);
-    this.position.y = this.field.position.y + radius * Math.sin(this.angle * Math.PI / 180);
-    this.angle += 0.2;
-    if(this.angle > 360) this.angle = 0;
-    console.log(this.angle);
+    this.position.x = this.field.position.x + radius * Math.cos(this.roangle * Math.PI / 180);
+    this.position.y = this.field.position.y + radius * Math.sin(this.roangle * Math.PI / 180);
+    this.roangle += 0.2;
+    if(this.roangle > 360) this.roangle = 0;
+    
   }
   else {
     var normalized = new Vector();
     normalized.x = x / distanceField;
     normalized.y = y / distanceField;
     //console.log(normalized);
-    this.position.x += normalized.x;
-    this.position.y += normalized.y;
+    
+    //this.position.x += normalized.x;
+    //this.position.y += normalized.y;
     //console.log(this.position.getAngle());
-    //this.position.add(this.velocity);
+    this.position.add(normalized);
+    this.roangle = Math.atan2(this.position.y-this.field.position.y, this.position.x-this.field.position.x) * (180 / Math.PI);
   }
-
-
 };
